@@ -1,7 +1,9 @@
 "use strict";
 
 const http = require('http');
+const fs = require('fs');
 const qs = require('querystring');
+const stream = require('stream');
 const _ = require('underscore');
 const Lviv = require('./lviv');
 
@@ -67,13 +69,31 @@ Lviv.prototype.query = function (options) {
         options.headers['content-type'] = 'application/json';
     }
     const request = this.createRequest(options);
-    var data;
-    if (options.data) {
-        data = 'json' === options.type ? JSON.stringify(options.data) : options.data;
-    }
     const promise = Lviv.promise(request);
-    request.end(data);
+    if (options.data) {
+        var data = options.data;
+        if ('json' === options.type) {
+            data = JSON.stringify(options.data);
+        }
+        else if (data instanceof stream.Readable) {
+            data.pipe(request);
+        }
+    }
+    if (!(data instanceof stream.Readable)) {
+        request.end(data);
+    }
     return promise;
+};
+
+Lviv.prototype.upload = function (path, data) {
+    if ('string' === typeof data) {
+        data = fs.createReadStream(data);
+    }
+    return this.query({
+        method: 'POST',
+        path: path,
+        data: data
+    })
 };
 
 module.exports = Lviv;

@@ -1,5 +1,8 @@
 "use strict";
 
+const _ = require('underscore');
+const fs = require('fs');
+
 module.exports = function (req, res) {
     var buffers = [];
     const path = req.url.split('?')[0];
@@ -47,6 +50,15 @@ module.exports = function (req, res) {
             });
             req.on('end', function () {
                 res.end(1 == buffers.length ? buffers[0] : Buffer.concat(buffers));
+            });
+            break;
+
+        case '/upload':
+            const filename = '/tmp/' + _.random(1, Number.MAX_SAFE_INTEGER).toString(36);
+            const writer = fs.createWriteStream(filename);
+            req.pipe(writer);
+            req.on('end', function () {
+                fs.createReadStream(filename).pipe(res);
             });
             break;
 

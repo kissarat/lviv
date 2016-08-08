@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const bandom = require('bandom');
+const fs = require('fs');
 const qs = require('querystring');
 require('colors');
 const http = require('http');
@@ -158,6 +159,15 @@ describe('request', function () {
             const url = '/raw?' + qs.stringify(params);
             assert(url === res.req.path, 'invalid url');
             assert('PUT' === res.req.method, 'invalid method');
+            assert(buffer.equals(res.data), 'buffer');
+            done();
+        });
+    });
+
+    it('upload', function (done) {
+        const filename = __dirname + '/../README.md';
+        lviv.upload('/upload', filename).catch(done).then(function (res) {
+            const buffer = fs.readFileSync(filename);
             assert(buffer.equals(res.data), 'buffer');
             done();
         });
