@@ -200,10 +200,12 @@ describe('request', function () {
     });
 
     it('upload', function (done) {
-        const filename = __dirname + '/../README.md';
+        const filename = '/tmp/' + bandom.nano('upload_');
+        fs.writeFileSync(filename, bandom.read(bandom.uint32BE(12 * 1024 * 1024)));
         lviv.upload('/upload', filename).then(function (res) {
             const buffer = fs.readFileSync(filename);
             assert(buffer.equals(res.data), 'buffer');
+            fs.unlinkSync(filename);
             done();
         })
             .catch(done);

@@ -57,8 +57,12 @@ module.exports = function (req, res) {
             const filename = '/tmp/' + _.random(1, Number.MAX_SAFE_INTEGER).toString(36);
             const writer = fs.createWriteStream(filename);
             req.pipe(writer);
+            const reader =fs.createReadStream(filename);
             req.on('end', function () {
-                fs.createReadStream(filename).pipe(res);
+                reader.pipe(res);
+                reader.on('end', function () {
+                    fs.unlinkSync(filename);
+                });
             });
             break;
 
