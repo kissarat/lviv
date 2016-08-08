@@ -60,6 +60,12 @@ Lviv.prototype.query = function (options) {
         }
         options.headers['content-type'] = 'application/json';
     }
+    if (options.data instanceof Buffer) {
+        options.type = 'arraybuffer';
+    }
+    if (options.data instanceof stream.Readable) {
+        options.type = 'blob';
+    }
     const request = this.createRequest(options);
     const promise = Lviv.promise(request);
     if (options.data) {

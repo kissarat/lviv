@@ -156,12 +156,12 @@ describe('request', function () {
     });
 
     it('put raw', function (done) {
-        const buffer = bandom.read(_.random(1, 512 * 1024));
+        const buffer = bandom.read(bandom.uint16BE(512 * 1024));
         const params = generateParams();
         lviv.put('/raw', params, buffer).then(function (res) {
+            assert('PUT' === res.req.method, 'invalid method');
             const url = '/raw?' + qs.stringify(params);
             assert(url === res.req.path, 'invalid url');
-            assert('PUT' === res.req.method, 'invalid method');
             assert(buffer.equals(res.data), 'buffer');
             done();
         })
