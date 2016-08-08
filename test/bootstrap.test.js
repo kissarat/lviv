@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require('assert');
+const bandom = require('bandom');
 require('colors');
 const http = require('http');
 const _ = require('underscore');
@@ -78,7 +79,7 @@ describe('request', function () {
         req.on('connect', function () {
             console.log('client connect'.cyan);
         });
-            req.on('continue', function () {
+        req.on('continue', function () {
             console.log('client continue'.cyan);
         });
         // req.on('response', function () {
@@ -104,7 +105,6 @@ describe('request', function () {
     it('post', function (done) {
         const rand = _.uniqueId('server');
         lviv.post('/mirror', {rand: rand}).catch(done).then(function (res) {
-            // console.log(JSON.stringify(res.data));
             assert(_.isObject(res.data), 'Has no response data');
             assert(_.isObject(res.data.headers), 'Has no headers');
             assert('content-type' in res.data.headers, 'Has no content-type header');
@@ -112,6 +112,27 @@ describe('request', function () {
             assert(_.isObject(res.data.data), 'Has no response data.data');
             assert(true === res.data.data.success, 'success');
             assert(rand === res.data.data.rand, 'rand');
+            done();
+        });
+    });
+
+    it('binary string', function (done) {
+        const length = _.random(1, 12);
+        const input = {};
+        for (let i = 0; i < length; i++) {
+            let size = _.random(1, 512 * 1024);
+            input[size] = bandom.read(size).toString('binary');
+        }
+        lviv.post('/mirror', input).catch(done).then(function (res) {
+            assert(_.isObject(res.data), 'Has no response data');
+            assert(_.isObject(res.data.headers), 'Has no headers');
+            assert('content-type' in res.data.headers, 'Has no content-type header');
+            assert('application/json' === res.data.headers['content-type'], 'content-type');
+            assert(_.isObject(res.data.data), 'Has no response data.data');
+            assert(true === res.data.data.success, 'success');
+            _.each(input, function (value, key) {
+                assert(input[key] === res.data.data[key], key);
+            });
             done();
         });
     });
