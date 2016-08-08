@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const assert = require('assert');
 const bandom = require('bandom');
@@ -67,7 +67,7 @@ describe('request', function () {
         const req = http.request(options, function (res) {
             const chunks = [];
             res.on('data', function (chunk) {
-                chunks.push(chunk)
+                chunks.push(chunk);
             });
             res.on('end', function () {
                 const string = Buffer.concat(chunks).toString('utf8');
@@ -176,7 +176,7 @@ describe('request', function () {
                 let key = bandom.read(_.random(0, 256)).toString('binary');
                 params[key] = bandom.read(_.random(0, 256)).toString('binary');
             }
-            return params
+            return params;
         }
 
         const params = generateBinaryObject();

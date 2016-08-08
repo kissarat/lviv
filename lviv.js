@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var isServer = ('undefined' !== typeof module) && module.exports;
 if (isServer) {
@@ -6,9 +6,7 @@ if (isServer) {
 }
 
 function Lviv(options) {
-    if (!_.isObject(this.defaults)) {
-        this.defauls = {}
-    }
+    this.defaults = {};
     _.defaults(this.defaults, Lviv.defaults);
     this.initialize(options);
 }
@@ -34,7 +32,7 @@ Lviv.params = function (object) {
     for (var i in object) {
         array.push(i + '=' + object[i]);
     }
-    return array.join('&')
+    return array.join('&');
 };
 
 Lviv.trace = function (promise) {
@@ -44,7 +42,7 @@ Lviv.trace = function (promise) {
         })
         .catch(function (data, xhr) {
             console.error(xhr.status, data);
-        })
+        });
 };
 
 Lviv.prototype = {
@@ -66,7 +64,7 @@ Lviv.prototype = {
         if (!_.isEmpty(options.params)) {
             var params = options.params;
             if ('object' == typeof params) {
-                params = Lviv.params(params)
+                params = Lviv.params(params);
             }
             url += '?' + params;
         }

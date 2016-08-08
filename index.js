@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const http = require('http');
 const fs = require('fs');
@@ -17,13 +17,13 @@ Lviv.promise = function (request) {
                     reject(res);
                 }
                 else {
-                    resolve(res)
+                    resolve(res);
                 }
             }
 
             const data = [];
             res.on('data', function (chunk) {
-                data.push(chunk)
+                data.push(chunk);
             });
             res.on('end', function () {
                 res.data = 1 == data.length ? data[0] : Buffer.concat(data);
@@ -34,7 +34,7 @@ Lviv.promise = function (request) {
             });
         });
         request.on('abort', reject);
-    })
+    });
 };
 
 Lviv.prototype.initialize = function (options) {
@@ -85,7 +85,7 @@ Lviv.prototype.upload = function (path, data) {
         method: 'POST',
         path: path,
         data: data
-    })
+    });
 };
 
 module.exports = Lviv;

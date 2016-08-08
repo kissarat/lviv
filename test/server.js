@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const _ = require('underscore');
 const fs = require('fs');
@@ -28,7 +28,7 @@ module.exports = function (req, res) {
             };
             if ('content-type' in req.headers) {
                 req.on('data', function (chunk) {
-                    buffers.push(chunk)
+                    buffers.push(chunk);
                 });
                 req.on('end', function () {
                     var data = 1 == buffers.length ? buffers[0] : Buffer.concat(buffers);
@@ -46,7 +46,7 @@ module.exports = function (req, res) {
 
         case '/raw':
             req.on('data', function (chunk) {
-                buffers.push(chunk)
+                buffers.push(chunk);
             });
             req.on('end', function () {
                 res.end(1 == buffers.length ? buffers[0] : Buffer.concat(buffers));
@@ -57,7 +57,7 @@ module.exports = function (req, res) {
             const filename = '/tmp/' + _.random(1, Number.MAX_SAFE_INTEGER).toString(36);
             const writer = fs.createWriteStream(filename);
             req.pipe(writer);
-            const reader =fs.createReadStream(filename);
+            const reader = fs.createReadStream(filename);
             req.on('end', function () {
                 reader.pipe(res);
                 reader.on('end', function () {
