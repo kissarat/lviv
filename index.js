@@ -34,12 +34,6 @@ Lviv.promise = function (request) {
             });
         });
         request.on('abort', reject);
-        // request.on('aborted', reject);
-        // request.on('checkException', reject);
-        // request.on('connect', reject);
-        // request.on('continue', reject);
-        // request.on('socket', reject);
-        // request.on('upgrade', reject);
     })
 };
 
@@ -55,9 +49,7 @@ Lviv.prototype.createRequest = function (options) {
     options.agent = this.agent;
     if (_.isObject(options.params)) {
         options.path += '?' + Lviv.params(options.params);
-        // options.query = options.params;
     }
-    // console.log(options.path);
     return http.request(options);
 };
 

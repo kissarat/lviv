@@ -70,3 +70,10 @@ module.exports = function (req, res) {
             break;
     }
 };
+
+if (require.main === module) {
+    require('http')
+        .createServer(module.exports)
+        .listen(9000);
+}
+

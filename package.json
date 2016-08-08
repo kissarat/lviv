@@ -24,7 +24,10 @@
   "devDependencies": {
     "mocha": "^3.0.1",
     "colors": "^1.1.2",
-    "underscore": "^1.8.3",
-    "bandom": "*"
+    "bandom": "*",
+    "karma-mocha": "*"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
   }
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-var isServer = undefined !== module && module.exports;
+var isServer = ('undefined' !== typeof module) && module.exports;
 if (isServer) {
     var _ = require('underscore');
 }
@@ -105,23 +105,34 @@ Lviv.prototype = {
         });
     },
 
-    post: function (path, data) {
-        return this.query({
-            method: 'POST',
-            path: path,
-            data: data,
-            type: 'Object' === data.constructor.name ? 'json' : 'arraybuffer'
-        });
+    update: function (method, path, params, data) {
+        var options = {
+            method: method,
+            path: path
+        };
+        if (data) {
+            options.params = params;
+            options.data = data;
+        }
+        else {
+            options.data = params;
+        }
+        if ('Object' === options.data.constructor.name) {
+            options.type = 'json';
+        }
+        return this.query(options);
+    },
+
+    post: function (path, params, data) {
+        return this.update('POST', path, params, data);
     },
 
     put: function (path, params, data) {
-        return this.query({
-            method: 'PUT',
-            path: path,
-            params: params,
-            data: data,
-            type: 'Object' === data.constructor.name ? 'json' : 'arraybuffer'
-        });
+        return this.update('PUT', path, params, data);
+    },
+
+    patch: function (path, params, data) {
+        return this.update('PATCH', path, params, data);
     },
 
     delete: function (path, params) {

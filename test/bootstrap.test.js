@@ -113,11 +113,12 @@ describe('request', function () {
             assert(true === res.data.success);
             done();
         })
+            .catch(done);
     });
 
     it('post', function (done) {
         const rand = _.uniqueId('server');
-        lviv.post('/mirror', {rand: rand}).catch(done).then(function (res) {
+        lviv.post('/mirror', {rand: rand}).then(function (res) {
             assert(_.isObject(res.data), 'Has no response data');
             assert('POST' === res.data.method, 'invalid method');
             assert(_.isObject(res.data.headers), 'Has no headers');
@@ -127,17 +128,18 @@ describe('request', function () {
             assert(true === res.data.data.success, 'success');
             assert(rand === res.data.data.rand, 'rand');
             done();
-        });
+        })
+            .catch(done);
     });
 
     it('binary string', function (done) {
-        const length = _.random(1, 12);
+        const length = _.random(1, 6);
         const input = {};
         for (let i = 0; i < length; i++) {
-            let size = _.random(1, 512 * 1024);
+            let size = _.random(1, 128 * 1024);
             input[size] = bandom.read(size).toString('binary');
         }
-        lviv.post('/mirror', input).catch(done).then(function (res) {
+        lviv.post('/mirror', input).then(function (res) {
             assert('POST' === res.req.method, 'invalid method');
             assert(_.isObject(res.data), 'Has no response data');
             assert(_.isObject(res.data.headers), 'Has no headers');
@@ -149,27 +151,61 @@ describe('request', function () {
                 assert(input[key] === res.data.data[key], key);
             });
             done();
-        });
+        })
+            .catch(done);
     });
 
     it('put raw', function (done) {
         const buffer = bandom.read(_.random(1, 512 * 1024));
         const params = generateParams();
-        lviv.put('/raw', params, buffer).catch(done).then(function (res) {
+        lviv.put('/raw', params, buffer).then(function (res) {
             const url = '/raw?' + qs.stringify(params);
             assert(url === res.req.path, 'invalid url');
             assert('PUT' === res.req.method, 'invalid method');
             assert(buffer.equals(res.data), 'buffer');
             done();
-        });
+        })
+            .catch(done);
+    });
+
+    it('update', function (done) {
+        function generateBinaryObject() {
+            const params = {};
+            const length = _.random(0, 16);
+            for (let i = 0; i < length; i++) {
+                let key = bandom.read(_.random(0, 256)).toString('binary');
+                params[key] = bandom.read(_.random(0, 256)).toString('binary');
+            }
+            return params
+        }
+
+        const params = generateBinaryObject();
+        const data = generateBinaryObject();
+        lviv.patch('/mirror', params, data).then(function (res) {
+            assert(200 === res.statusCode, 'Status ' + res.statusCode);
+            const url = '/mirror?' + Lviv.params(params);
+            assert(url === res.req.path, 'invalid url');
+            assert('PATCH' === res.req.method, 'invalid method');
+            assert(_.isObject(res.data), 'Has no response data');
+            assert(_.isObject(res.data.headers), 'Has no headers');
+            assert('content-type' in res.data.headers, 'Has no content-type header');
+            assert('application/json' === res.data.headers['content-type'], 'content-type');
+            assert(_.isObject(res.data.data), 'Has no response data.data');
+            assert(true === res.data.data.success, 'success');
+            delete res.data.data.success;
+            assert.deepStrictEqual(res.data.data, data);
+            done();
+        })
+            .catch(done);
     });
 
     it('upload', function (done) {
         const filename = __dirname + '/../README.md';
-        lviv.upload('/upload', filename).catch(done).then(function (res) {
+        lviv.upload('/upload', filename).then(function (res) {
             const buffer = fs.readFileSync(filename);
             assert(buffer.equals(res.data), 'buffer');
             done();
-        });
+        })
+            .catch(done);
     });
 });
