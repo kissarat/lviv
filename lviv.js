@@ -109,7 +109,8 @@ Lviv.prototype = {
         return this.query({
             method: 'POST',
             path: path,
-            data: data
+            data: data,
+            type: 'json'
         });
     },
 
@@ -118,7 +119,8 @@ Lviv.prototype = {
             method: 'PUT',
             path: path,
             params: params,
-            data: data
+            data: data,
+            type: 'json'
         });
     },
 

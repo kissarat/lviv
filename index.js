@@ -9,15 +9,40 @@ Lviv.params = qs.stringify;
 
 Lviv.promise = function (request) {
     return new Promise(function (resolve, reject) {
-        request.on('response', function (response) {
-            if (response.statusCode >= 400) {
-                reject(response);
+        request.on('response', function (res) {
+            function receive() {
+                if (res.statusCode >= 400) {
+                    reject(res);
+                }
+                else {
+                    resolve(res)
+                }
+            }
+
+            const data = [];
+            if ('content-type' in res.headers) {
+                res.on('data', function (chunk) {
+                    data.push(chunk)
+                });
+                res.on('end', function () {
+                    res.data = 1 == data.length ? data[0] : Buffer.concat(data);
+                    if (res.headers['content-type'].indexOf('json') >= 0) {
+                        res.data = JSON.parse(res.data.toString('utf8'));
+                    }
+                    receive();
+                });
             }
             else {
-                resolve(response)
+                receive();
             }
         });
         request.on('abort', reject);
+        // request.on('aborted', reject);
+        // request.on('checkException', reject);
+        // request.on('connect', reject);
+        // request.on('continue', reject);
+        // request.on('socket', reject);
+        // request.on('upgrade', reject);
     })
 };
 
@@ -35,13 +60,20 @@ Lviv.prototype.createRequest = function (options) {
 };
 
 Lviv.prototype.query = function (options) {
+    if ('json' === options.type) {
+        if (!options.headers) {
+            options.headers = {};
+        }
+        options.headers['content-type'] = 'application/json';
+    }
     const request = this.createRequest(options);
     var data;
     if (options.data) {
         data = 'json' === options.type ? JSON.stringify(options.data) : options.data;
     }
+    const promise = Lviv.promise(request);
     request.end(data);
-    return Lviv.promise(request);
+    return promise;
 };
 
 module.exports = Lviv;
