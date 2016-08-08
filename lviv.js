@@ -110,7 +110,7 @@ Lviv.prototype = {
             method: 'POST',
             path: path,
             data: data,
-            type: 'json'
+            type: 'Object' === data.constructor.name ? 'json' : 'arraybuffer'
         });
     },
 
@@ -120,7 +120,7 @@ Lviv.prototype = {
             path: path,
             params: params,
             data: data,
-            type: 'json'
+            type: 'Object' === data.constructor.name ? 'json' : 'arraybuffer'
         });
     },
 

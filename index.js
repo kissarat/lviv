@@ -20,21 +20,16 @@ Lviv.promise = function (request) {
             }
 
             const data = [];
-            if ('content-type' in res.headers) {
-                res.on('data', function (chunk) {
-                    data.push(chunk)
-                });
-                res.on('end', function () {
-                    res.data = 1 == data.length ? data[0] : Buffer.concat(data);
-                    if (res.headers['content-type'].indexOf('json') >= 0) {
-                        res.data = JSON.parse(res.data.toString('utf8'));
-                    }
-                    receive();
-                });
-            }
-            else {
+            res.on('data', function (chunk) {
+                data.push(chunk)
+            });
+            res.on('end', function () {
+                res.data = 1 == data.length ? data[0] : Buffer.concat(data);
+                if ('content-type' in res.headers && res.headers['content-type'].indexOf('json') >= 0) {
+                    res.data = JSON.parse(res.data.toString('utf8'));
+                }
                 receive();
-            }
+            });
         });
         request.on('abort', reject);
         // request.on('aborted', reject);
@@ -56,6 +51,11 @@ Lviv.prototype.createRequest = function (options) {
     }
     _.defaults(options, this.defaults);
     options.agent = this.agent;
+    if (_.isObject(options.params)) {
+        options.path += '?' + Lviv.params(options.params);
+        // options.query = options.params;
+    }
+    // console.log(options.path);
     return http.request(options);
 };
 

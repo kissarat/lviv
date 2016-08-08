@@ -2,6 +2,7 @@
 
 const assert = require('assert');
 const bandom = require('bandom');
+const qs = require('querystring');
 require('colors');
 const http = require('http');
 const _ = require('underscore');
@@ -14,6 +15,15 @@ const defaults = {
 };
 const lviv = new Lviv(defaults);
 var server;
+
+function generateParams() {
+    const params = {};
+    const length = _.random(1, 12);
+    for (let i = 0; i < length; i++) {
+        params[_.random(1, 512 * 1024)] = _.random(1, 512 * 1024);
+    }
+    return params;
+}
 
 describe('request', function () {
     before(function (done) {
@@ -46,7 +56,7 @@ describe('request', function () {
     it('server', function (done) {
         const options = {
             method: 'POST',
-            path: '/mirror',
+            path: '/mirror?' + qs.stringify(generateParams()),
             headers: {
                 'content-type': 'application/json'
             }
@@ -61,6 +71,7 @@ describe('request', function () {
             res.on('end', function () {
                 const string = Buffer.concat(chunks).toString('utf8');
                 const data = JSON.parse(string);
+                assert('content-type' in data.headers, 'Has no content-type header');
                 assert('application/json' === data.headers['content-type'], 'content-type');
                 assert(true === data.data.success, 'success');
                 assert(rand === data.data.rand, 'rand');
@@ -133,6 +144,17 @@ describe('request', function () {
             _.each(input, function (value, key) {
                 assert(input[key] === res.data.data[key], key);
             });
+            done();
+        });
+    });
+
+    it('put raw', function (done) {
+        const buffer = bandom.read(_.random(1, 512 * 1024));
+        const params = generateParams();
+        lviv.put('/raw', params, buffer).catch(done).then(function (res) {
+            const url = '/raw?' + qs.stringify(params);
+            assert(url === res.req.path, 'invalid url');
+            assert(buffer.equals(res.data), 'buffer');
             done();
         });
     });

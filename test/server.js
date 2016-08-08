@@ -1,5 +1,9 @@
+"use strict";
+
 module.exports = function (req, res) {
-    switch (req.url) {
+    var buffers = [];
+    const path = req.url.split('?')[0];
+    switch (path) {
         case '/ping':
             res.writeHead(200, {
                 'content-type': 'application/json'
@@ -8,8 +12,7 @@ module.exports = function (req, res) {
             break;
 
         case '/mirror':
-            const buffers = [];
-            const send = function (data) {
+            let send = function (data) {
                 res.writeHead(200, {
                     'content-type': 'application/json'
                 });
@@ -36,6 +39,15 @@ module.exports = function (req, res) {
             else {
                 send({success: true});
             }
+            break;
+
+        case '/raw':
+            req.on('data', function (chunk) {
+                buffers.push(chunk)
+            });
+            req.on('end', function () {
+                res.end(1 == buffers.length ? buffers[0] : Buffer.concat(buffers));
+            });
             break;
 
         default:
