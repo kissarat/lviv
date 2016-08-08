@@ -71,6 +71,7 @@ describe('request', function () {
             res.on('end', function () {
                 const string = Buffer.concat(chunks).toString('utf8');
                 const data = JSON.parse(string);
+                assert('POST' === data.method, 'invalid method');
                 assert('content-type' in data.headers, 'Has no content-type header');
                 assert('application/json' === data.headers['content-type'], 'content-type');
                 assert(true === data.data.success, 'success');
@@ -117,6 +118,7 @@ describe('request', function () {
         const rand = _.uniqueId('server');
         lviv.post('/mirror', {rand: rand}).catch(done).then(function (res) {
             assert(_.isObject(res.data), 'Has no response data');
+            assert('POST' === res.data.method, 'invalid method');
             assert(_.isObject(res.data.headers), 'Has no headers');
             assert('content-type' in res.data.headers, 'Has no content-type header');
             assert('application/json' === res.data.headers['content-type'], 'content-type');
@@ -135,6 +137,7 @@ describe('request', function () {
             input[size] = bandom.read(size).toString('binary');
         }
         lviv.post('/mirror', input).catch(done).then(function (res) {
+            assert('POST' === res.req.method, 'invalid method');
             assert(_.isObject(res.data), 'Has no response data');
             assert(_.isObject(res.data.headers), 'Has no headers');
             assert('content-type' in res.data.headers, 'Has no content-type header');
@@ -154,6 +157,7 @@ describe('request', function () {
         lviv.put('/raw', params, buffer).catch(done).then(function (res) {
             const url = '/raw?' + qs.stringify(params);
             assert(url === res.req.path, 'invalid url');
+            assert('PUT' === res.req.method, 'invalid method');
             assert(buffer.equals(res.data), 'buffer');
             done();
         });
