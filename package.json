@@ -25,7 +25,8 @@
     "mocha": "^3.0.1",
     "colors": "^1.1.2",
     "bandom": "*",
-    "karma-mocha": "*"
+    "codecov": "*",
+    "coveralls": "*"
   },
   "dependencies": {
     "underscore": "^1.8.3"
