@@ -5,7 +5,9 @@ node_js:
 
 after_script:
   - npm run test-cov
-  - codecov
-  - cat ./coverage/lcov.info | coveralls
+  - codecov -t 8df441bb-6a73-438b-9e3e-ffd2989b8664
 
 sudo: false
+
+codecov:
+  token: 8df441bb-6a73-438b-9e3e-ffd2989b8664

@@ -6,7 +6,10 @@
   "license": "LGPL-3.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "npm run lint && mocha && npm run istanbul && npm run codecov",
+    "codecov": "codecov -t 8df441bb-6a73-438b-9e3e-ffd2989b8664",
+    "istanbul": "istanbul cover *.js",
+    "lint": "eslint index.js lviv.js test/server.js test/bootstrap.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +32,9 @@
     "bandom": "^1",
     "codecov": "^1.0.1",
     "colors": "^1.1.2",
-    "coveralls": "^2.11.12",
     "eslint": "^3.2.2",
-    "mocha": "^3.0.1"
+    "mocha": "^3.0.1",
+    "istanbul": "^0.4.0"
   },
   "dependencies": {
     "underscore": "^1.8.3"
